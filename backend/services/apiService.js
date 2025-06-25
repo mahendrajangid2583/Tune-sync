@@ -29,7 +29,7 @@ const fetchArtist = async (query) => {
   try {
     console.log("query" , query);
     const response = await axios.get(`${url}/artists/${encodeURIComponent(query)}`);
-    console.log(response.data);
+    console.log("CHECKING ONCE AGAIN" , response.data);
     return response.data;  // Return data from Saavn API
   } catch (error) {
     console.error("Error fetching from Saavn API:", error);

@@ -56,15 +56,16 @@ exports.getPlaylist = async (req, res) => {
 
 exports.getArtistsSongs = async (req, res) => {
   const query = req.params.id;
-  
+   
   if (!query) {
     return res.status(400).json({ message: "Query parameter is required" });
   }
   try {
     const songs = await fetchArtist(query);
-    res.status(200).json(songs);  // Send fetched songs as response
+    console.log("TRUE LOVE" , songs);
+    return res.status(200).json(songs);  // Send fetched songs as response
   } catch (error) {
     console.error("Error fetching songs:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ message: "Internal Server Error" });
   } 
 }

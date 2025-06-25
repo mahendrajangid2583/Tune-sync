@@ -340,10 +340,10 @@ const MusicHomepage = (params) => {
   } = useAudio();
   // Extract data from location state or params
 
-  const [_Artists, setArtists] = useState([
+   const [_Artists, setArtists] = useState([
     {
-      id: 459633,
-      title: "Atif Aslam",
+      id: 485956,
+      title: "Yo Yo Honey Singh",
       imageUrl: myImage,
     },
     {
@@ -352,8 +352,8 @@ const MusicHomepage = (params) => {
       imageUrl: myImage,
     },
     {
-      id: 455144,
-      title: "Kishore Kumar",
+      id: 455109,
+      title: "Lata Mangeshkar",
       imageUrl: myImage,
     },
     {
@@ -362,8 +362,8 @@ const MusicHomepage = (params) => {
       imageUrl: myImage,
     },
     {
-      id: 468245,
-      title: "Diljit Dosanjh",
+      id: 464656,
+      title: "Armaan Malik",
       imageUrl: myImage,
     },
     {
