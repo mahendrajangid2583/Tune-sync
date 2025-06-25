@@ -86,7 +86,7 @@ const ReleaseCard = ({ release, navigate }) => (
     onClick={() => navigate('/playlist', { state: { playlist: release } })}
     className="bg-transparent text-center hover:bg-gray-800 rounded-lg p-2 transition-colors group cursor-pointer"
   >
-    <div className="aspect-square overflow-hidden rounded-full mx-auto" style={{ width: "100%", maxWidth: "120px", height: "auto" }}>
+    <div className="aspect-square overflow-hidden rounded-full mx-auto" style={{ width: "100%", maxWidth: "180px", height: "auto" }}>
       <img
         src={release.imageUrl}
         alt={release.title}
