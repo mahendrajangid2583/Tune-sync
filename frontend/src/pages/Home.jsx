@@ -19,41 +19,40 @@ import {useAudio} from "./contexts/AudioProvider";
 const HeroSection = ({ searchQuery, setSearchQuery, toggleSearchPage }) => (
   <section className="my-8 rounded-xl overflow-hidden">
     <div
-      className="bg-gradient-to-r from-purple-900 to-indigo-900 py-20 px-8 text-center relative"
-      style={{
-        backgroundImage:
-          "linear-gradient(rgba(76, 29, 149, 0.7), rgba(30, 27, 75, 0.9)), url('/api/placeholder/1200/500')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-pink-500 text-transparent bg-clip-text">
-        Your Music, Your Way
-      </h1>
-      <p className="text-lg text-gray-300 max-w-2xl mx-auto mb-8">
-        Stream millions of songs and podcasts. Discover new artists and create
-        the perfect playlist for every moment.
-      </p>
-
-      <div
-        className="max-w-xl mx-auto flex rounded-full overflow-hidden bg-gray-800"
-        onClick={(e) => {
-          e.stopPropagation();
-          toggleSearchPage();
-        }}
-      >
-        <input
-          type="text"
-          placeholder="Search for songs, artists, or podcasts..."
-          className="flex-1 py-4 px-6 bg-transparent text-white focus:outline-none"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <button className="bg-purple-600 px-6 py-4 font-medium hover:bg-purple-700 transition-colors">
-          Search
-        </button>
-      </div>
-    </div>
+  className="bg-gradient-to-r from-purple-900 to-indigo-900 py-16 px-4 text-center relative sm:py-20"
+  style={{
+    backgroundImage:
+      "linear-gradient(rgba(76, 29, 149, 0.7), rgba(30, 27, 75, 0.9)), url('/api/placeholder/1200/500')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+  }}
+>
+  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-pink-500 text-transparent bg-clip-text">
+    Your Music, Your Way
+  </h1>
+  <p className="text-sm sm:text-base text-gray-300 max-w-xl mx-auto mb-6">
+    Stream millions of songs and podcasts. Discover new artists and create
+    the perfect playlist for every moment.
+  </p>
+  <div
+    className="max-w-xs sm:max-w-md md:max-w-xl mx-auto flex rounded-full overflow-hidden bg-gray-800"
+    onClick={(e) => {
+      e.stopPropagation();
+      toggleSearchPage();
+    }}
+  >
+    <input
+      type="text"
+      placeholder="Search for songs, artists, or podcasts..."
+      className="flex-1 py-3 px-4 bg-transparent text-white focus:outline-none text-sm"
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+    />
+    <button className="bg-purple-600 px-4 py-3 font-medium hover:bg-purple-700 transition-colors text-sm">
+      Search
+    </button>
+  </div>
+</div>
   </section>
 );
 
@@ -62,32 +61,32 @@ const HeroSection = ({ searchQuery, setSearchQuery, toggleSearchPage }) => (
 
 const PlaylistCard = ({ playlist, navigate }) => (
   <div
-    onClick={() => navigate('/playlist', { state: { playlist: playlist } })}
-    className="bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-700 transition-colors group w-full text-left cursor-pointer"
+    onClick={() => navigate('/playlist', { state: { playlist } })}
+    className="bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-700 transition-colors group cursor-pointer"
   >
     <div className="aspect-square overflow-hidden">
       <img
         src={playlist.imageUrl}
         alt={playlist.title}
         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-        style={{ maxHeight: "400px" }}
       />
     </div>
-    <div className="p-3">
-      <h3 className="font-bold text-sm">{playlist.title}</h3>
-      <p className="text-gray-400 text-xs mt-1">{playlist.description}</p>
+    <div className="p-2">
+      <h3 className="font-bold text-xs sm:text-sm truncate">{playlist.title}</h3>
+      <p className="text-gray-400 text-[8px] font-thin sm:text-xs mt-1 line-clamp-2">{playlist.description}</p>
     </div>
   </div>
 );
 
 
 // Updated ReleaseCard for Artists with circular image
-const ReleaseCard = ({ release, navigate}) => (
+
+const ReleaseCard = ({ release, navigate }) => (
   <div 
-     onClick={() => navigate('/playlist', { state: { playlist: release } })}
+    onClick={() => navigate('/playlist', { state: { playlist: release } })}
     className="bg-transparent text-center hover:bg-gray-800 rounded-lg p-2 transition-colors group cursor-pointer"
   >
-    <div className="aspect-square overflow-hidden rounded-full mx-auto" style={{ width: "200px", height: "200px" }}>
+    <div className="aspect-square overflow-hidden rounded-full mx-auto" style={{ width: "100%", maxWidth: "120px", height: "auto" }}>
       <img
         src={release.imageUrl}
         alt={release.title}
@@ -95,11 +94,10 @@ const ReleaseCard = ({ release, navigate}) => (
       />
     </div>
     <div className="p-2">
-      <h2 className="font-bold text-l">{release.title}</h2>
+      <h2 className="font-bold text-sm truncate">{release.title}</h2>
     </div>
   </div>
 );
-
 // Updated GenreTile with smaller size
 const GenreTile = ({ genre }) => (
   <div
@@ -121,7 +119,8 @@ const FeaturedPlaylists = ({ playlists, navigate }) => (
       <h2 className="text-3xl font-bold px-5">Featured Playlists</h2>
     </div>
 
-    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
+    
+    <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
       {playlists.map((playlist) => (
         <PlaylistCard key={playlist.id} playlist={playlist} navigate={navigate} />
       ))}
@@ -168,10 +167,10 @@ const GenresSection = ({ genres }) => (
 const Footer = () => (
   <footer className="bg-gray-800 mt-20 pt-12 pb-24">
     <div className="container mx-auto px-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div>
           <h4 className="font-bold text-lg mb-4">Company</h4>
-          <ul className="space-y-2">
+          <ul className="space-y-2 text-xs sm:text-sm">
             <li>
               <a
                 href="#"
@@ -532,7 +531,7 @@ const MusicHomepage = (params) => {
   
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white font-sans">
+    <div className="min-h-screen bg-gray-900 text-white font-sans relative overflow-hidden">
       {/* Header Component */}
       <Navbar show = {"Home"}  isplaying = {isPlaying}/>
       {/* Search Page Component (conditionally rendered) */}

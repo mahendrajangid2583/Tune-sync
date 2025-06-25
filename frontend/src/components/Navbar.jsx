@@ -1,21 +1,26 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchProfile } from "../services/operations/auth";
-import {useProfile} from "../pages/contexts/profileContext";
+import { useProfile } from "../pages/contexts/profileContext";
+import { useGroup } from "../pages/contexts/GroupContext";
 
 // Profile Dropdown Component
-const ProfileDropdown = ({ onOpenProfile, onLogout}) => {
+const ProfileDropdown = ({ onOpenProfile, onLogout }) => {
   return (
     <div className="absolute right-4 mt-12 w-48 bg-gray-800 rounded-lg shadow-xl z-50 border border-gray-700">
       <div className="py-1">
         <button
-          onClick={()=>{onOpenProfile()}}
+          onClick={() => {
+            onOpenProfile();
+          }}
           className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-700 transition-colors"
         >
           Open Profile
         </button>
         <button
-          onClick={()=>{onLogout()}}
+          onClick={() => {
+            onLogout();
+          }}
           className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-700 transition-colors"
         >
           Log Out
@@ -25,17 +30,15 @@ const ProfileDropdown = ({ onOpenProfile, onLogout}) => {
   );
 };
 
-const Header = ({show}) => {
+const Header = ({ show }) => {
   const navigate = useNavigate();
   const [currentTab, setCurrentTab] = useState("Home");
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const profileIconRef = useRef(null);
+  const { updateGroupState } = useGroup();
 
-  const {
-    profileData,
-    setProfileData
-  } = useProfile();
+  const { profileData, setProfileData } = useProfile();
   const [showId, setshowId] = useState(false);
 
   // Get first letter of firstName if profileData exists
@@ -50,8 +53,14 @@ const Header = ({show}) => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    updateGroupState({
+      isInGroup: false,
+      groupId: null,
+      isAdmin: false,
+      groupName: null,
+    });
     setProfileData(null);
     setshowId(true);
     setShowProfileDropdown(false);
@@ -84,8 +93,8 @@ const Header = ({show}) => {
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
-  }, []); 
-  
+  }, []);
+
   return (
     <div className="relative">
       <header className="sticky top-0 bg-gray-900/90 text-white backdrop-blur-md z-50 border-b border-gray-800">
@@ -100,7 +109,7 @@ const Header = ({show}) => {
                 <li>
                   <div
                     className={`${
-                     ( show === "Home") ? "text-white" : "text-gray-400"
+                      show === "Home" ? "text-white" : "text-gray-400"
                     } font-medium hover:text-white transition-colors cursor-pointer`}
                     onClick={() => navigate("/")}
                   >
@@ -142,7 +151,7 @@ const Header = ({show}) => {
             </nav>
 
             <div className="flex space-x-4 relative">
-              {(showId || !profileData) ? (
+              {showId || !profileData ? (
                 <>
                   <button
                     className="px-4 py-2 rounded-full border border-gray-600 text-white font-medium hover:border-white transition-colors"

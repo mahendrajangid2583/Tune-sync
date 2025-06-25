@@ -33,7 +33,6 @@ router.get("/profile", verifyToken , async (req, res) => {
   console.log("hello" , typeof verifyToken);
   console.log("Getting here");
   try {
-    
       const user = await User.findById(req.user.id).select("-password"); // Exclude password
       if (!user) {
           return res.status(404).json({ success: false, message: "User not found" });

@@ -4,18 +4,21 @@ import { useSelector } from "react-redux";
 
 // Create a context
 export const ProfileContext = createContext();
-
+const token  = localStorage.getItem("token");
 export const ProfileProvider = ({ children }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        
          await fetchProfile();
       } catch (error) {
         console.error("Failed to fetch profile:", error);
       }
     };
+    if(token){
+      fetchData();
+    }
     
-    fetchData();
   }, []);
   
   const [profileData,setProfileData] = useState(localStorage.getItem("user")? JSON.parse(localStorage.getItem("user")) : null);
