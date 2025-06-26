@@ -102,7 +102,7 @@ const GroupChat = ({ closeChat, activeChat }) => {
   
 
   return (
-    <div className={`fixed bottom-0 right-0 w-[450px] h-[600px] bg-gray-900 text-white rounded-tl-xl shadow-2xl overflow-hidden border border-gray-700 flex flex-col transform transition-all duration-500 ease-in-out ${visible ? " translate-y-0":"translate-y-full"} `}>
+    <div className={`fixed bottom-0 right-0 w-full md:w-[450px] h-[600px] bg-gray-900 text-white rounded-tl-xl shadow-2xl overflow-hidden border border-gray-700 flex flex-col transform transition-all duration-500 ease-in-out ${visible ? " translate-y-0":"translate-y-full"} `}>
       {/* Chat header */}
       <div className="bg-gray-800 px-4 py-3 flex justify-between items-center border-b border-gray-700">
         <div className="flex items-center space-x-3">

@@ -102,7 +102,7 @@ const GroupSidebarButton = () => {
 
       {/* Friend group Sidebar */}
       <div
-        className={`fixed overflow-hidden top-20 border border-gray-600 rounded-md left-2  h-[620px] w-[360px] bg-gradient-to-b from-gray-900 via-gray-800 to-black shadow-2xl transform transition-transform duration-500 ease-in-out ${
+        className={`fixed overflow-hidden top-20 border border-gray-600 rounded-md left-2  h-[620px] w-[300px] md:w-[360px] bg-gradient-to-b from-gray-900 via-gray-800 to-black shadow-2xl transform transition-transform duration-500 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
