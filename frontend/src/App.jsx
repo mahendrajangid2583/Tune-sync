@@ -27,8 +27,8 @@ function App() {
             
             <QueueProvider>
               <AudioProvider>
-                <MyFriendButton />
-                <GroupSidebarButton />
+                {/* <MyFriendButton />
+                <GroupSidebarButton /> */}
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/Signup" element={<Signup />} />

@@ -10,6 +10,8 @@ import { fetchArtist, fetchPlaylist } from "../services/operations/songsAPI";
 import Navbar from "../components/Navbar";
 import { io } from "socket.io-client";
 import {useAudio} from "./contexts/AudioProvider";
+import MyFriendButton from "../components/connect_components/MyFriendButton";
+import GroupSidebarButton from "../components/groups_components/GroupSidebarButton";
 
 
 
@@ -534,6 +536,9 @@ const MusicHomepage = (params) => {
     <div className="min-h-screen bg-gray-900 text-white font-sans relative overflow-hidden">
       {/* Header Component */}
       <Navbar show = {"Home"}  isplaying = {isPlaying}/>
+
+      <MyFriendButton />
+      <GroupSidebarButton />
       {/* Search Page Component (conditionally rendered) */}
       {showSearchPage && (
         <SearchPage
