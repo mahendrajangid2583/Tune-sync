@@ -97,84 +97,103 @@ const MusicLibrary = () => {
   };
 
   const renderContent = () => {
-    if (activeTab === 'songs') {
-      return (
-        <div className="mt-2">
-          {likedSongs.map((track, index) => (
-            <div
-              key={track.id}
-              className="group grid grid-cols-12 gap-4 items-center p-3 rounded-md mb-1 cursor-pointer hover:bg-gray-800/40 transition-colors"
-              onClick={() => handleSongClick(track, index, clearnext, loadSong, enquenext, likedSongs , currentSong , seekTo)}
-            >
-              <div className="col-span-1 text-center flex justify-center">
-                <span className="text-gray-400">{index + 1}</span>
-              </div>
-              <div className="col-span-7 flex items-center">
-                <img
-                  src={track.coverImage|| myImage}
-                  alt={track.title}
-                  className="w-10 h-10 rounded shadow-md mr-3"
-                />
-                <h3 className="font-medium text-white group-hover:text-green-400 transition-colors">
-                  {track.title}
-                </h3>
-              </div>
-              <div className="col-span-3 text-sm text-gray-400 truncate">
-                {track.artists}
-              </div>
-              <div className="col-span-1 flex justify-end items-center gap-3">
-                <span className="text-sm text-gray-400">
-                  {`${Math.floor(track.duration / 60)}:${track.duration % 60 < 10 ? '0' : ''}${track.duration % 60}`}
-                </span>
-                <Heart
-                  size={14}
-                  className="text-green-500 cursor-pointer"
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      );
-    }
-
+  if (activeTab === 'songs') {
     return (
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-        {likedPlaylists.map((playlist) => (
-          <div 
-            key={playlist.id}
-            className="bg-gray-800 rounded-lg p-4 hover:bg-gray-700 transition-colors group cursor-pointer"
-            onClick={() => handleOpenPlaylist(playlist)}
+      <div className="mt-2">
+        {likedSongs.map((track, index) => (
+          <div
+            key={track.id}
+            className="group grid grid-cols-12 gap-4 items-center p-3 rounded-md mb-2 cursor-pointer bg-white/5 backdrop-blur-md border border-white/10 shadow-md hover:bg-white/10 transition-all"
+            onClick={() =>
+              handleSongClick(
+                track,
+                index,
+                clearnext,
+                loadSong,
+                enquenext,
+                likedSongs,
+                currentSong,
+                seekTo
+              )
+            }
           >
-            <div className="relative mb-4">
-              <img 
-                src={playlist.image} 
-                alt={playlist.playlist_name}
-                className="w-full h-48 object-cover rounded-lg group-hover:opacity-80 transition-opacity"
-              />
-              <button 
-                className="absolute bottom-2 right-2 bg-green-500 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleOpenPlaylist(playlist);
-                }}
-              >
-                <Play size={20} fill="white" />
-              </button>
+            {/* Index */}
+            <div className="col-span-1 text-center flex justify-center">
+              <span className="text-gray-300">{index + 1}</span>
             </div>
-            <h3 className="text-white font-semibold text-lg truncate">
-              {playlist.playlist_name}
-            </h3>
-            <p className="text-gray-400 text-sm truncate">
-              {playlist.description}
-            </p>
-            <div className="text-gray-500 text-xs mt-2">
-              {playlist.songsCount} Songs
+
+            {/* Track Info */}
+            <div className="col-span-7 flex items-center">
+              <img
+                src={track.coverImage || myImage}
+                alt={track.title}
+                className="w-10 h-10 rounded-md shadow mr-3"
+              />
+              <h3 className="font-medium text-white group-hover:text-green-400 transition-colors">
+                {track.name || track.title}
+              </h3>
+            </div>
+
+            {/* Artists */}
+            <div className="col-span-3 text-sm text-gray-300 truncate">
+              {track.artists?.primary
+                ?.map((artist) => artist.name)
+                .join(', ') || 'Unknown Artist'}
+            </div>
+
+            {/* Duration & Heart */}
+            <div className="col-span-1 flex justify-end items-center gap-3">
+              <span className="text-sm text-gray-400">
+                {`${Math.floor(track.duration / 60)}:${track.duration % 60 < 10 ? '0' : ''}${track.duration % 60}`}
+              </span>
+              <Heart size={14} className="text-green-500 cursor-pointer" />
             </div>
           </div>
         ))}
       </div>
     );
-  };
+  }
+
+  // Playlist Grid
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+      {likedPlaylists.map((playlist) => (
+        <div
+          key={playlist.id}
+          className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 shadow-lg hover:bg-white/10 transition-all cursor-pointer group"
+          onClick={() => handleOpenPlaylist(playlist)}
+        >
+          <div className="relative mb-4">
+            <img
+              src={playlist.image}
+              alt={playlist.playlist_name}
+              className="w-full h-48 object-cover rounded-lg group-hover:opacity-80 transition-opacity"
+            />
+            <button
+              className="absolute bottom-2 right-2 bg-green-500 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleOpenPlaylist(playlist);
+              }}
+            >
+              <Play size={20} fill="white" />
+            </button>
+          </div>
+          <h3 className="text-white font-semibold text-lg truncate">
+            {playlist.playlist_name}
+          </h3>
+          <p className="text-gray-300 text-sm truncate">
+            {playlist.description}
+          </p>
+          <div className="text-gray-400 text-xs mt-2">
+            {playlist.songsCount} Songs
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 
   return (
     <div className="bg-gradient-to-b from-gray-900 to-black min-h-screen w-full text-white font-sans overflow-x-hidden">
