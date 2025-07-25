@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { login } from "../services/operations/auth";
 import { useProfile } from "./contexts/profileContext";
+import Back_to_home from "../components/Sign_up_Component/Back_to_home";
 const LoginForm = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -101,7 +102,7 @@ const LoginForm = () => {
             localStorage.setItem("user", JSON.stringify(data));
             navigate("/");
           });
-        });  
+        },100);  
         // For demo purposes, show success after 1.5s
       } catch (error) {
         console.error("Error during user authentication:", error);
@@ -114,6 +115,10 @@ const LoginForm = () => {
 
   return (
     <div className="min-h-screen box-content bg-gray-800 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="absolute z-10 top-5">
+      <Back_to_home/>
+    </div>
+    
       {/* Particle background */}
       <div className="absolute inset-0 overflow-hidden">
         {Array.from({ length: 20 }).map((_, i) => (

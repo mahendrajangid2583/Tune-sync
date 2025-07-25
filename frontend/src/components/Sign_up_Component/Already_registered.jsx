@@ -1,8 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const Already_registered = () => {
+  const [isLoaded, setIsLoaded] = useState(false);
+      useEffect(() => {
+        setIsLoaded(true);
+      }, []);
   return (
-    <div className="mt-6">
+    <div 
+    className={`mt-6 transition-all duration-500 delay-200 ${
+                isLoaded
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4"
+              }`}
+    >
       <p className="text-center text-sm text-gray-400">
         Already registered?{" "}
         <a

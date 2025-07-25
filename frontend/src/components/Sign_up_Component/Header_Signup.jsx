@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const Header_Signup = (params) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+    useEffect(() => {
+      setIsLoaded(true);
+    }, []);
   return (
     <>
       <div className="absolute inset-0 overflow-hidden">
@@ -10,7 +14,13 @@ const Header_Signup = (params) => {
         <div className="absolute bottom-20 right-10 w-72 h-72 bg-pink-900 rounded-full filter blur-3xl opacity-20"></div>
       </div>
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-md z-10">
+      <div 
+      className={`sm:mx-auto sm:w-full sm:max-w-md z-10 transition-all duration-500 delay-200 ${
+                isLoaded
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4"
+              }`}
+      >
         <div className="flex justify-center">
           <div className="h-12 w-12 rounded-full bg-gradient-to-br bg-purple-400 p-3 shadow-lg shadow-indigo-500/30">
             <svg

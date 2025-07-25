@@ -14,6 +14,7 @@ import { useGroup } from "../../pages/contexts/GroupContext";
 import { createGroup, deleteGroup, exitGroup } from "../../services/operations/groups";
 import { useSocket } from "../../pages/contexts/SocketContext";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router";
 
 const MusicGroupsSidebar = ({ groups, toggleGroup }) => {
   const { groupState, updateGroupState } = useGroup();
@@ -22,7 +23,17 @@ const MusicGroupsSidebar = ({ groups, toggleGroup }) => {
   const [onlineUsers,setOnlineUsers] = useState([]);
   const user = JSON.parse(localStorage.getItem("user"));
 
+  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+
   const createNewGroup = async()=>{
+    if(token==null){
+      toast.error("You are not logged in");
+      setTimeout(()=>{
+         navigate("/login");
+      },150);
+      return;
+    }
     if (groupState.isInGroup === false) {
       console.log("no group");
       //create group
@@ -61,6 +72,13 @@ const MusicGroupsSidebar = ({ groups, toggleGroup }) => {
 
   // Join a group
   const joinGroup = (group) => {
+    if(token==null){
+      toast.error("You are not logged in");
+      setTimeout(()=>{
+         navigate("/login");
+      },150);
+      return;
+    }
     setJoinReq(true);
 
     socket.emit("send-invitaion", {
@@ -77,7 +95,7 @@ const MusicGroupsSidebar = ({ groups, toggleGroup }) => {
     }, 5000);
   };
 
-  const token = localStorage.getItem("token");
+  
   const leaveGroup = async (data) => {
     try {
       if (groupState.isAdmin) {
@@ -147,8 +165,10 @@ const MusicGroupsSidebar = ({ groups, toggleGroup }) => {
               <div className="flex gap-2 items-center">
                 
 
-                {onlineUsers.includes(group.admin._id) && (
+                {onlineUsers.includes(group.admin._id) ?(
                   <div className=" text-green-500 rounded-full mr-2 animate-pulse">Active</div>
+                ):(
+                  <div className=" text-red-500 rounded-full mr-2 animate-pulse">offline</div>
                 )}
                 <span className="text-xs text-gray-400">
                   {group.members.length}

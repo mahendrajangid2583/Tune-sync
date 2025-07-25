@@ -17,6 +17,7 @@ import MusicLibrary from "./pages/library";
 import { SocketProvider } from "./pages/contexts/SocketContext";
 import GroupSidebarButton from "./components/groups_components/GroupSidebarButton";
 import { GroupProvider } from "./pages/contexts/GroupContext";
+import PrivetRoute from "./components/core/Auth/PrivetRoute";
 
 function App() {
   return (
@@ -37,7 +38,10 @@ function App() {
                   <Route path="/Profile" element={<Profile />} />
                   <Route path="/verification-email" element={<VerifyEmail />} />
                   <Route path="/playlist" element={<PlaylistPage />} />
-                  <Route path="/connect-page" element={<ConnectPage />} />
+                  
+                  <Route path="/connect-page" element={<PrivetRoute>
+                    <ConnectPage />
+                  </PrivetRoute>} />
                   <Route
                     path="/forgot-password"
                     element={<ForgotPasswordForm />}

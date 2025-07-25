@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { verify_email } from "../services/operations/auth";
 import { useNavigate } from "react-router";
 import Success from "../components/Sign_up_Component/Success";
@@ -6,6 +6,7 @@ import Header_Signup from "../components/Sign_up_Component/Header_Signup";
 import Info from "../components/Sign_up_Component/Form_information";
 import Already_registered from "../components/Sign_up_Component/Already_registered";
 import Submit from "../components/Sign_up_Component/Submit_button";
+import Back_to_home from "../components/Sign_up_Component/Back_to_home";
 
 const SignUpForm = () => {
   const navigate = useNavigate();
@@ -23,6 +24,11 @@ const SignUpForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  const [isLoaded, setIsLoaded] = useState(false);
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -38,7 +44,6 @@ const SignUpForm = () => {
       });
     }
   };
-
 
   const validateForm = () => {
     const newErrors = {};
@@ -85,11 +90,9 @@ const SignUpForm = () => {
       return response;
     } catch (error) {
       console.error("Error checking email:", error);
-      return false;  // Return false in case of an error
+      return false; // Return false in case of an error
     }
   };
-
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -105,44 +108,57 @@ const SignUpForm = () => {
     // Proceed with submission
     setIsSubmitting(true);
     setIsRedirecting(true);
-    navigate("/verification-email", { state: { data: { formData: formData } } });
+    navigate("/verification-email", {
+      state: { data: { formData: formData } },
+    });
   };
 
   return (
-    <div>
-        
-        <div className="min-h-screen bg-gray-800 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
-          <Header_Signup />
-          <div className="mt-3 sm:mx-auto sm:w-full sm:max-w-md z-10">
-            <div className="bg-gray-900 bg-opacity-80 backdrop-blur-lg py-8 px-4 shadow-2xl shadow-indigo-500/10 sm:rounded-xl sm:px-10 border border-gray-800">
-              {isSuccess ? (
-                <Success formdata={formData} />
-              ) : (
-                <form className="space-y-6" onSubmit={handleSubmit}>
-
-                  <Info
-                    formData={formData} handleChange={handleChange}
-                    errors={errors}
-                    showConfirmPassword={showConfirmPassword}
-                    showPassword={showPassword}
-                    setShowPassword={setShowPassword}
-                    setShowConfirmPassword={setShowConfirmPassword}
-                  />
-
-                  <Submit handleSubmit={handleSubmit} isSubmitting={isSubmitting} isRedirecting={isRedirecting} />
-
-                  <Already_registered />
-
-                </form>
-              )}
-            </div>
-          </div>
-
-          {/* Animated glow lines */}
-          <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-30"></div>
-          <div className="absolute top-0 left-0 h-full w-px bg-gradient-to-b from-transparent via-blue-500 to-transparent opacity-30"></div>
-          <div className="absolute top-0 right-0 h-full w-px bg-gradient-to-b from-transparent via-indigo-500 to-transparent opacity-30"></div>
+    <div className="relative">
+      <div
+        className={`min-h-screen bg-gray-800 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden `}
+      >
+        <div className="absolute z-10 top-5">
+          <Back_to_home />
         </div>
+        <Header_Signup />
+        <div className={`mt-3 sm:mx-auto sm:w-full sm:max-w-md z-10 relative `}>
+          <div
+            className={`bg-gray-900 bg-opacity-80 backdrop-blur-lg py-8 px-4 shadow-2xl shadow-indigo-500/10 sm:rounded-xl sm:px-10 border border-gray-800 ${
+              isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+            }`}
+          >
+            {isSuccess ? (
+              <Success formdata={formData} />
+            ) : (
+              <form className="space-y-6" onSubmit={handleSubmit}>
+                <Info
+                  formData={formData}
+                  handleChange={handleChange}
+                  errors={errors}
+                  showConfirmPassword={showConfirmPassword}
+                  showPassword={showPassword}
+                  setShowPassword={setShowPassword}
+                  setShowConfirmPassword={setShowConfirmPassword}
+                />
+
+                <Submit
+                  handleSubmit={handleSubmit}
+                  isSubmitting={isSubmitting}
+                  isRedirecting={isRedirecting}
+                />
+
+                <Already_registered />
+              </form>
+            )}
+          </div>
+        </div>
+
+        {/* Animated glow lines */}
+        <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-30"></div>
+        <div className="absolute top-0 left-0 h-full w-px bg-gradient-to-b from-transparent via-blue-500 to-transparent opacity-30"></div>
+        <div className="absolute top-0 right-0 h-full w-px bg-gradient-to-b from-transparent via-indigo-500 to-transparent opacity-30"></div>
+      </div>
     </div>
   );
 };

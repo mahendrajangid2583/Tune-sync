@@ -1,11 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
 const Info = (params) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+    useEffect(() => {
+      setIsLoaded(true);
+    }, []);
   return (
     <>
       <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
-        <div>
+        <div className={`transition-all duration-500 delay-200 ${
+                isLoaded
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4"
+              }`}>
           <label htmlFor="firstName" className="block text-sm font-medium text-purple-500">
             First name
           </label>
@@ -26,7 +34,11 @@ const Info = (params) => {
           </div>
         </div>
 
-        <div>
+        <div className={`transition-all duration-500 delay-200 ${
+                isLoaded
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4"
+              }`}>
           <label htmlFor="lastName" className="block text-sm font-medium text-purple-500">
             Last name
           </label>
@@ -48,7 +60,11 @@ const Info = (params) => {
         </div>
       </div>
 
-      <div>
+      <div className={`transition-all duration-500 delay-200 ${
+                isLoaded
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4"
+              }`}>
         <label htmlFor="email" className="block text-sm font-medium text-purple-500">
           Email address
         </label>
@@ -70,7 +86,11 @@ const Info = (params) => {
       </div>
 
       {/* Password Field with Eye Icon */}
-      <div>
+      <div className={`transition-all duration-500 delay-200 ${
+                isLoaded
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4"
+              }`}>
         <label htmlFor="password" className="block text-sm font-medium text-purple-500">
           Password
         </label>
@@ -99,7 +119,11 @@ const Info = (params) => {
       </div>
 
       {/* Confirm Password Field with Eye Icon */}
-      <div>
+      <div className={`transition-all duration-500 delay-200 ${
+                isLoaded
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4"
+              }`}>
         <label htmlFor="confirmPassword" className="block text-sm font-medium text-purple-500">
           Confirm password
         </label>

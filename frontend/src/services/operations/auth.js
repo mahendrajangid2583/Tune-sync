@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useProfile } from "../../pages/contexts/profileContext";
+import toast from "react-hot-toast";
 
 // Load environment variables
 const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:4000/api/v1/";
@@ -123,6 +124,7 @@ export const login = async (email, password) => {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
     }
+    toast.success("Logged In");
     return response;
   } catch (error) {
     console.error(

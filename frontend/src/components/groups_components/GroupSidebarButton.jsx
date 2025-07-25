@@ -125,20 +125,6 @@ const GroupSidebarButton = () => {
             />
           </div>
           
-            <div
-              className={`fixed z-30 top-0 left-0 border border-gray-600 rounded-md   h-[620px] w-[360px] bg-gradient-to-b from-gray-900 via-gray-800 to-black shadow-2xl transform transition-transform duration-500 ease-in-out scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-900 ${
-                isChatOpen ?  "translate-x-0" : "-translate-x-full"
-              }`}
-            > 
-              {/* <ChatContainer
-                currentChat={currentChat}
-                currentUser={currentUser}
-                closeChatBox= {closeChatBox}
-                isChatOpen = {isChatOpen}
-                setNotificationMessage={setNotificationMessage}
-              /> */}
-            </div>
-          
         </div>
       </div>
     </div>

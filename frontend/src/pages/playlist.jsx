@@ -6,8 +6,11 @@ import myImage from "./coverImage.jpg";
 import { useQueue } from "./contexts/queueContext";
 import { useAudio } from "./contexts/AudioProvider";
 import Navbar from "../components/Navbar";
+import { useGroup } from "./contexts/GroupContext";
 
 export const handleSongClick = (track, index , clearnext , loadSong , enqueuenext , playlistData , currentSong , seekTo) => {
+
+  
   // Clear queue before adding new songs
   
   // Prepare current song data

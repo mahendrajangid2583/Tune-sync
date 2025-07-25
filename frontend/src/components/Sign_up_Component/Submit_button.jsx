@@ -1,9 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function Submit_button(params) {
-
+    const [isLoaded, setIsLoaded] = useState(false);
+        useEffect(() => {
+          setIsLoaded(true);
+        }, []);
   return (
-    <div className="submit-container">
+    <div 
+    className={`submit-container transition-all duration-500 delay-200 ${
+                isLoaded
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4"
+              }`}
+    >
       <button
         type="submit"
         disabled={params.isSubmitting}

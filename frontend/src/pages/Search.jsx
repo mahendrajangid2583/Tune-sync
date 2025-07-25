@@ -4,12 +4,15 @@ import myImage from "./coverImage.jpg";
 import Navbar from "../components/Navbar"
 import MusicPlayer from "./Music_player";
 import { useAudio } from "./contexts/AudioProvider";
+import { useGroup } from "./contexts/GroupContext";
+import toast from "react-hot-toast";
 
 const SearchPage = (params) => {
   const [recentSearches, setRecentSearches] = useState([]);
   const [selectedSong, setSelectedSong] = useState(null);
   const [topResults, setTopResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const {groupState}= useGroup();
   const updatedUsers = topResults.map((song) => ({
     ...song,
     coverImageUrl: song.coverImageUrl ?? myImage, // Set default if null
@@ -78,7 +81,7 @@ const SearchPage = (params) => {
       } finally {
         setIsLoading(false);
       }
-    }, 300);
+    }, 100);
 
     return () => clearTimeout(timer);
   }, [params.searchQuery]);
@@ -86,7 +89,12 @@ const SearchPage = (params) => {
   // Handle song selection
   const handleSongSelect = (song) => {
     // Format the song data for the MusicPlayer component
-          
+    if(groupState?.isInGroup){
+       if(!groupState.isAdmin){
+          toast.error("You are not admin, left group for play song");
+          return;
+       }
+    }  
     loadSong({
       title: song.name || song.title,
       artists: song.artists,
