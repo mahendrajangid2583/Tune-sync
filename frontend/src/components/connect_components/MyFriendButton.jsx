@@ -149,7 +149,7 @@ const MyFriendButton = () => {
           </div>
 
           <div
-            className={`fixed z-30 top-0 bottom-0  right-0 md:left-0 border border-gray-600 rounded-md h-[calc(100vh-200px)]  md:h-[620px] w-[calc(100vw-1rem)] md:w-[360px] bg-gradient-to-b from-gray-900 via-gray-800 to-black shadow-2xl transform transition-transform duration-500 ease-in-out scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-900 ${
+            className={`fixed z-30 top-0 bottom-0  right-0 md:left-0 border border-gray-600 rounded-md h-[calc(100vh-150px)]  md:h-[620px] w-[calc(100vw-1rem)] md:w-[360px] bg-gradient-to-b from-gray-900 via-gray-800 to-black shadow-2xl transform transition-transform duration-500 ease-in-out scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-900 ${
               isChatOpen ? "translate-x-0" : "translate-x-full"
             }`}
           >
