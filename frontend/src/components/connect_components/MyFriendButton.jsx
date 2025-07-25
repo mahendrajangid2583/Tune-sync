@@ -8,7 +8,7 @@ import {
 } from "../../services/operations/friends";
 import ChatContainer from "./ChatContainer";
 import Notification from "./Notification";
-import notificationAudio from "./audio/notification.wav"
+import notificationAudio from "./audio/notification.wav";
 
 const MyFriendButton = () => {
   // Function to remove a friend
@@ -16,7 +16,7 @@ const MyFriendButton = () => {
   const [friends, setFriends] = useState([]);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [currentChat, setCurrentChat] = useState([]);
-  const [isChatOpen,setIsChatOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState(null);
   // Fetch friends
   const token = localStorage.getItem("token");
@@ -24,7 +24,7 @@ const MyFriendButton = () => {
   const currentUser = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user"))
     : [];
-    console.log("current user", currentUser);
+  console.log("current user", currentUser);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
   const closeSidebar = () => setIsOpen(false);
@@ -57,7 +57,6 @@ const MyFriendButton = () => {
     };
   }, []);
 
- 
   const removeFriend = (friendId) => {
     const friend = friends.find((f) => f._id === friendId);
     if (!friend) return;
@@ -76,18 +75,16 @@ const MyFriendButton = () => {
     setCurrentChat(data);
     setIsChatOpen(true);
     setIsOpen(true);
-    dismissNotification()
+    dismissNotification();
   };
 
-  const closeChatBox = (data)=>{
+  const closeChatBox = (data) => {
     setIsChatOpen(false);
-  }
+  };
 
-  const openChatBox = (data)=>{
+  const openChatBox = (data) => {
     setIsChatOpen(true);
-  }
-
-  
+  };
 
   useEffect(() => {
     if (notificationMessage) {
@@ -95,19 +92,18 @@ const MyFriendButton = () => {
       audio.play();
     }
   }, [notificationMessage]);
-    
 
   return (
     <div className=" relative z-30">
       {/* //notification */}
-      { notificationMessage &&
+      {notificationMessage && (
         <Notification
           message={notificationMessage}
           onClose={dismissNotification}
-          friends = {friends}
-          changeChatUser= {changeChatUser}
+          friends={friends}
+          changeChatUser={changeChatUser}
         />
-      }
+      )}
       <button
         onClick={toggleSidebar}
         className={`fixed ${
@@ -147,25 +143,24 @@ const MyFriendButton = () => {
               friends={friends}
               onlineUsers={onlineUsers}
               onRemove={removeFriend}
-              openChatBox= {openChatBox}
+              openChatBox={openChatBox}
               changeChatUser={changeChatUser}
             />
           </div>
-          
-            <div
-              className={`fixed z-30 top-0  right-0 md:left-0 border border-gray-600 rounded-md h-[calc(100vh-100px)]  md:h-[620px] w-[calc(100vw-1rem)] md:w-[360px] bg-gradient-to-b from-gray-900 via-gray-800 to-black shadow-2xl transform transition-transform duration-500 ease-in-out scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-900 ${
-                isChatOpen ? "translate-x-0" : "translate-x-full"
-              }`}
-            > 
-              <ChatContainer
-                currentChat={currentChat}
-                currentUser={currentUser}
-                closeChatBox= {closeChatBox}
-                isChatOpen = {isChatOpen}
-                setNotificationMessage={setNotificationMessage}
-              />
-            </div>
-          
+
+          <div
+            className={`fixed z-30 top-0 bottom-0  right-0 md:left-0 border border-gray-600 rounded-md h-[calc(100vh-200px)]  md:h-[620px] w-[calc(100vw-1rem)] md:w-[360px] bg-gradient-to-b from-gray-900 via-gray-800 to-black shadow-2xl transform transition-transform duration-500 ease-in-out scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-900 ${
+              isChatOpen ? "translate-x-0" : "translate-x-full"
+            }`}
+          >
+            <ChatContainer
+              currentChat={currentChat}
+              currentUser={currentUser}
+              closeChatBox={closeChatBox}
+              isChatOpen={isChatOpen}
+              setNotificationMessage={setNotificationMessage}
+            />
+          </div>
         </div>
       </div>
     </div>
