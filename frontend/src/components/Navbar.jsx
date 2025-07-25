@@ -149,13 +149,14 @@ const Header = ({ show }) => {
               {showId || !profileData ? (
                 <>
                   <button
-                    className="px-4 py-2 rounded-full border border-gray-600 text-white font-medium hover:border-white transition-colors"
+                    className="px-2 py-1 md:px-4 md:py-2 rounded-full  border text-sm border-gray-600 text-white font-normal md:font-medium hover:border-white transition-colors"
                     onClick={() => navigate("/Login")}
                   >
                     Log In
                   </button>
                   <button
-                    className="px-4 py-2 rounded-full bg-purple-600 text-white font-medium hover:bg-purple-700 transition-colors"
+                    className="px-2 py-1 md:px-4 md:py-2 rounded-full bg-purple-600 text-white font-normal 
+                    md:font-medium hover:bg-purple-700 transition-colors"
                     onClick={() => navigate("/Signup")}
                   >
                     Sign Up
