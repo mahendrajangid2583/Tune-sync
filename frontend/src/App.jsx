@@ -18,8 +18,10 @@ import { SocketProvider } from "./pages/contexts/SocketContext";
 import GroupSidebarButton from "./components/groups_components/GroupSidebarButton";
 import { GroupProvider } from "./pages/contexts/GroupContext";
 import PrivetRoute from "./components/core/Auth/PrivetRoute";
+import useAudioUnlock from "./utils/useAudioUnlock";
 
 function App() {
+  const isAudioUnlocked = useAudioUnlock();
   return (
     <div>
       <ProfileProvider>
