@@ -18,6 +18,7 @@ import FeaturedPlaylists from "../components/Home-Page-Components/FeaturedPlayli
 import Artists from "../components/Home-Page-Components/Artists";
 import GenresSection from "../components/Home-Page-Components/GenresSection";
 import Footer from "../components/Home-Page-Components/Footer";
+import useAudioUnlock from "../utils/useAudioUnlock";
 
 
  
@@ -199,27 +200,28 @@ const MusicHomepage = (params) => {
   };
   
   //  Use a "User Interaction Unlock" Mechanism
-     const [isAudioUnlocked, setIsAudioUnlocked] = useState(false);
+    //  const [isAudioUnlocked, setIsAudioUnlocked] = useState(false);
   
-     useEffect(() => {
-       const unlockAudio = async () => {
-         try {
-           const audio = new Audio();
-           audio.src =
-             "data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjMyLjEwNQAAAAAAAAAAAAAA//...";
-           await audio.play(); // Play silent audio
-           audio.pause(); // Pause immediately
-           setIsAudioUnlocked(true);
-           console.log("Audio unlocked!");
-         } catch (error) {
-           console.error("Failed to unlock audio:", error);
-         }
-       };
+    //  useEffect(() => {
+    //    const unlockAudio = async () => {
+    //      try {
+    //        const audio = new Audio();
+    //        audio.src =
+    //          "data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjMyLjEwNQAAAAAAAAAAAAAA//...";
+    //        await audio.play(); // Play silent audio
+    //        audio.pause(); // Pause immediately
+    //        setIsAudioUnlocked(true);
+    //        console.log("Audio unlocked!");
+    //      } catch (error) {
+    //        console.error("Failed to unlock audio:", error);
+    //      }
+    //    };
    
-       // Unlock audio on user interaction
-       document.addEventListener("click", unlockAudio, { once: true });
-     }, []);
+    //    // Unlock audio on user interaction
+    //    document.addEventListener("click", unlockAudio, { once: true });
+    //  }, []);
   
+     useAudioUnlock();
 
   return (
     <div className="min-h-screen bg-gray-900 text-white font-sans relative overflow-hidden">
