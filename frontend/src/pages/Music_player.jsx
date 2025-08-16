@@ -148,7 +148,7 @@ const MusicPlayer = () => {
 
           {/* Mobile-only like button */}
           <button
-            className={`md:hidden mr-3 ${isLiked ? 'text-purple-500' : 'text-gray-400'} hover:text-purple-600`}
+            className={`md:hidden mr-0 md:mr-3 ${isLiked ? 'text-purple-500' : 'text-gray-400'} hover:text-purple-600`}
             onClick={handleLikeClick}
           >
             <svg
@@ -170,9 +170,9 @@ const MusicPlayer = () => {
           
 
           {/* Desktop controls (hidden on mobile) */}
-          <div className="hidden md:flex items-center space-x-4 ml-4">
+          <div className="flex items-center space-x-4 ml-0 md:ml-4">
             <button
-              className="text-gray-400 hover:text-white"
+              className="hidden md:block text-gray-400 hover:text-white"
               onClick={(e) => handleControlClick(e, prevSong)}
             >
               <svg
@@ -192,34 +192,34 @@ const MusicPlayer = () => {
             </button>
 
             {/* Play/Pause button (always visible) */}
-          <button
-            className="bg-purple-600 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-purple-700 shadow-md transition-all duration-200"
-            onClick={(e) => handleControlClick(e, togglePlay)}
-          >
-            {isPlaying ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <rect x="6" y="4" width="4" height="16" rx="1" />
-                <rect x="14" y="4" width="4" height="16" rx="1" />
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            )}
-          </button>
+            <button
+              className="bg-purple-600 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-purple-700 shadow-md transition-all duration-200"
+              onClick={(e) => handleControlClick(e, togglePlay)}
+            >
+              {isPlaying ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <rect x="6" y="4" width="4" height="16" rx="1" />
+                  <rect x="14" y="4" width="4" height="16" rx="1" />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              )}
+            </button>
 
             <button
-              className="text-gray-400 hover:text-white"
+              className="hidden md:block text-gray-400 hover:text-white"
               onClick={(e) => handleControlClick(e, nextSong)}
             >
               <svg
