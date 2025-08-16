@@ -1,8 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useAudio } from "./contexts/AudioProvider";
-import { useLocation } from "react-router";
-import { set } from "mongoose";
- 
+import FullScreenMusicPlayer from "./FullScreenMusicPlayer"; // Import the full-screen component
 
 const MusicPlayer = () => {
   const {
@@ -19,17 +17,20 @@ const MusicPlayer = () => {
     nextSong,
     prevSong,
   } = useAudio();
+  
   const progressBarRef = useRef(null);
   const [formattedDuration, setFormattedDuration] = useState(
     currentSong.duration
   );
+  const [isFullScreenOpen, setIsFullScreenOpen] = useState(false);
 
   const isPresent = (song) => {
     const likedSongs = JSON.parse(localStorage.getItem("likedSongs")) || [];
     return likedSongs.some((likedSong) => likedSong.id === song.id);
-  }
+  };
 
   const [isLiked, setIsLiked] = useState(isPresent(currentSong));
+
   // Load the song when component mounts or song changes
   useEffect(() => {
     if (currentSong && currentSong.audioSrc) {
@@ -37,9 +38,9 @@ const MusicPlayer = () => {
     }
   }, []);
 
-  useEffect(() =>{
-     setIsLiked(isPresent(currentSong));
-  } , [currentSong]);
+  useEffect(() => {
+    setIsLiked(isPresent(currentSong));
+  }, [currentSong]);
 
   // Update formatted duration when duration changes
   useEffect(() => {
@@ -54,7 +55,7 @@ const MusicPlayer = () => {
       const seconds = Math.floor(duration % 60);
       setFormattedDuration(`${minutes}:${seconds < 10 ? "0" : ""}${seconds}`);
     }
-  },[duration]);
+  }, [duration]);
 
   // Format time from seconds to MM:SS
   const formatTime = (timeInSeconds) => {
@@ -91,17 +92,28 @@ const MusicPlayer = () => {
     seekTo(newTime);
   };
 
-  const handleLikeClick = () => {
+  const handleLikeClick = (e) => {
+    e.stopPropagation(); // Prevent opening full screen when clicking like button
     setIsLiked(!isLiked);
-    console.log("check is isliked" , isLiked);
     const likedSongs = JSON.parse(localStorage.getItem("likedSongs")) || [];
-    if(!isLiked){
+    if (!isLiked) {
       likedSongs.push(currentSong);
-    }else{
-      likedSongs.splice(likedSongs.indexOf(currentSong), 1);
+    } else {
+      const index = likedSongs.findIndex(song => song.id === currentSong.id);
+      if (index > -1) {
+        likedSongs.splice(index, 1);
+      }
     }
-    console.log("checking Songs" , likedSongs);
     localStorage.setItem("likedSongs", JSON.stringify(likedSongs));
+  };
+
+  const handlePlayerClick = () => {
+    setIsFullScreenOpen(true);
+  };
+
+  const handleControlClick = (e, action) => {
+    e.stopPropagation(); // Prevent opening full screen when clicking controls
+    action();
   };
 
   // Get title, artist, and cover image from the current song or the prop
@@ -110,55 +122,79 @@ const MusicPlayer = () => {
   const coverImage = currentSong?.coverImage || "coverImage.jpg";
 
   return (
-    <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-4xl px-4">
-      <div className="bg-gray-600 rounded-lg p-4 flex items-center shadow-2xl">
-        {/* Cover image */}
-        <div className="w-14 h-14 rounded overflow-hidden mr-4">
-          <img
-            src={coverImage}
-            alt={`${title} by ${artists}`}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              e.target.src = "coverImage.jpg"; // Fallback to default image on error
-            }}
-          />
-        </div>
+    <>
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-4xl px-4">
+        <div 
+          className="bg-gray-600 rounded-lg p-4 flex items-center shadow-2xl cursor-pointer hover:bg-gray-500 transition-colors"
+          onClick={handlePlayerClick}
+        >
+          {/* Cover image */}
+          <div className="w-14 h-14 rounded overflow-hidden mr-4">
+            <img
+              src={coverImage}
+              alt={`${title} by ${artists}`}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.src = "coverImage.jpg"; // Fallback to default image on error
+              }}
+            />
+          </div>
 
-        {/* Song info */}
-        <div className="flex-1 min-w-0 mr-4">
-          <h4 className="font-medium text-sm text-white">{title}</h4>
-          <p className="text-gray-400 text-xs truncate">{artists}</p>
-        </div>
+          {/* Song info */}
+          <div className="flex-1 min-w-0 mr-4">
+            <h4 className="font-medium text-sm text-white">{title}</h4>
+            <p className="text-gray-400 text-xs truncate">{artists}</p>
+          </div>
 
-        {/* Player controls */}
-        <div className="flex items-center space-x-4">
+          {/* Mobile-only like button */}
           <button
-            className="text-gray-400 hover:text-white"
-            onClick={() => {
-              prevSong();
-            }}
+            className={`md:hidden mr-3 ${isLiked ? 'text-purple-500' : 'text-gray-400'} hover:text-purple-600`}
+            onClick={handleLikeClick}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5"
-              fill="none"
               viewBox="0 0 24 24"
+              fill={isLiked ? 'currentColor' : 'none'}
               stroke="currentColor"
+              strokeWidth="2"
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
               />
             </svg>
           </button>
 
+          
+
+          {/* Desktop controls (hidden on mobile) */}
+          <div className="hidden md:flex items-center space-x-4 ml-4">
+            <button
+              className="text-gray-400 hover:text-white"
+              onClick={(e) => handleControlClick(e, prevSong)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+
+            {/* Play/Pause button (always visible) */}
           <button
             className="bg-purple-600 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-purple-700 shadow-md transition-all duration-200"
-            onClick={() => {
-              togglePlay();
-            }}
+            onClick={(e) => handleControlClick(e, togglePlay)}
           >
             {isPlaying ? (
               <svg
@@ -182,100 +218,110 @@ const MusicPlayer = () => {
             )}
           </button>
 
-          <button
-            className="text-gray-400 hover:text-white"
-            onClick={() => {
-              console.log("hello");
-              nextSong();
-            }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+            <button
+              className="text-gray-400 hover:text-white"
+              onClick={(e) => handleControlClick(e, nextSong)}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </button>
-        </div>
-
-        {/* Progress bar */}
-        <div className="hidden md:flex items-center flex-1 mx-4">
-          <span className="text-xs text-gray-400 min-w-[40px] text-right mr-2 ">
-            {formatTime(currentTime)}
-          </span>
-          <div
-            className="h-1 flex-1 bg-gray-700 rounded-full overflow-hidden cursor-pointer"
-            ref={progressBarRef}
-            onClick={handleSeek}
-          >
-            <div
-              className="h-full bg-purple-500"
-              style={{ width: `${progressPercentage}%` }}
-            ></div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
           </div>
-          <span className="text-xs text-gray-400 min-w-[40px] ml-2">
-            {formattedDuration}
-          </span>
 
-          <button
-            className={`ml-2 ${isLiked ? 'text-purple-500' : 'text-gray-400'} hover:text-purple-600`}
-            onClick={handleLikeClick}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 24 24"
-              fill={isLiked ? 'currentColor' : 'none'}
-              stroke="currentColor"
-              strokeWidth="2"
+          {/* Progress bar (desktop only) */}
+          <div className="hidden md:flex items-center flex-1 mx-4">
+            <span className="text-xs text-gray-400 min-w-[40px] text-right mr-2">
+              {formatTime(currentTime)}
+            </span>
+            <div
+              className="h-1 flex-1 bg-gray-700 rounded-full overflow-hidden cursor-pointer"
+              ref={progressBarRef}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSeek(e);
+              }}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-              />
-            </svg>
-          </button>
-        </div>
-        
-        {/* Volume control */}
-        <div className="hidden md:flex items-center">
-          <button className="text-gray-400 hover:text-white mr-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+              <div
+                className="h-full bg-purple-500"
+                style={{ width: `${progressPercentage}%` }}
+              ></div>
+            </div>
+            <span className="text-xs text-gray-400 min-w-[40px] ml-2">
+              {formattedDuration}
+            </span>
+
+            <button
+              className={`ml-2 ${isLiked ? 'text-purple-500' : 'text-gray-400'} hover:text-purple-600`}
+              onClick={handleLikeClick}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15.536 8.464a5 5 0 010 7.072M12 9.64a3 3 0 010 4.72m-3.536-8.727a8 8 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707A1 1 0 0110 4v16a1 1 0 01-1.707.707L3.586 16H2a1 1 0 01-1-1v-4a1 1 0 011-1h1.586z"
-              />
-            </svg>
-          </button>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={volume}
-            onChange={handleVolumeChange}
-            className="w-20 h-1"
-          />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                viewBox="0 0 24 24"
+                fill={isLiked ? 'currentColor' : 'none'}
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                />
+              </svg>
+            </button>
+          </div>
+
+          {/* Volume control (desktop only) */}
+          <div className="hidden md:flex items-center">
+            <button className="text-gray-400 hover:text-white mr-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15.536 8.464a5 5 0 010 7.072M12 9.64a3 3 0 010 4.72m-3.536-8.727a8 8 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707A1 1 0 0110 4v16a1 1 0 01-1.707.707L3.586 16H2a1 1 0 01-1-1v-4a1 1 0 011-1h1.586z"
+                />
+              </svg>
+            </button>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={volume}
+              onChange={(e) => {
+                e.stopPropagation();
+                handleVolumeChange(e);
+              }}
+              className="w-20 h-1"
+            />
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Full Screen Music Player */}
+      <FullScreenMusicPlayer 
+        isOpen={isFullScreenOpen}
+        onClose={() => setIsFullScreenOpen(false)}
+      />
+    </>
   );
 };
 
