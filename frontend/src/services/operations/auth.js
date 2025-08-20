@@ -123,8 +123,9 @@ export const login = async (email, password) => {
       console.log("From auth checking user", response.data.user);
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
+      toast.success("Logged In");
     }
-    toast.success("Logged In");
+    
     return response;
   } catch (error) {
     console.error(
