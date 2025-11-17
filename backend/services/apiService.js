@@ -171,15 +171,21 @@ const fetchPlaylist = async (playlistId) => {
    fetchHomePlaylists(count = 12, ttlSeconds = 90) ->
      { playlists: [...], sourceCounts: { chart, genre, curated } }
    ------------------------ */
+/* ------------------------
+   FETCH HOME PLAYLISTS (Indian-focused)
+   fetchHomePlaylists(count = 12, ttlSeconds = 90)
+   ------------------------ */
+const INDIAN_PLAYLIST_KEYWORDS = ['Bollywood', 'Hindi', 'Punjabi', 'Tamil', 'Telugu', 'Indie India', 'Indian Classics', 'India Top 50'];
+
 const fetchHomePlaylists = async (count = 12, ttlSeconds = 90) => {
   const clamped = Math.max(6, Math.min(50, Number(count || 12)));
-  const cacheKey = `home_playlists_${clamped}`;
+  const cacheKey = `home_playlists_indian_${clamped}`;
 
   const cached = getCache(cacheKey);
   if (cached) return cached;
 
   try {
-    // 1) Chart playlists (global)
+    // 1) chart playlists (keep some popular picks)
     const chartResp = await axios.get(`${DEEZER}/chart/0/playlists`);
     const chartPlaylists = (chartResp.data?.data || []).map(p => ({
       id: p.id,
@@ -189,54 +195,47 @@ const fetchHomePlaylists = async (count = 12, ttlSeconds = 90) => {
       link: p.link
     }));
 
-    // 2) Genres: pick up to 2 random genres (exclude id 0)
-    const genresResp = await axios.get(`${DEEZER}/genre`);
-    const genres = (genresResp.data?.data || []).filter(g => g && g.id && g.id !== 0);
-    const randomGenres = shuffle(genres).slice(0, 2);
-
-    const genrePromises = randomGenres.map(g =>
-      axios.get(`${DEEZER}/chart/${g.id}/playlists`)
+    // 2) Keyword-based Indian playlist searches
+    const keywordPromises = INDIAN_PLAYLIST_KEYWORDS.map(k =>
+      axios.get(`${DEEZER}/search/playlist`, { params: { q: k, limit: 8 } })
         .then(r => (r.data?.data || []).map(p => ({
-          id: p.id,
-          title: p.title,
-          picture: p.picture_medium,
-          nb_tracks: p.nb_tracks,
-          link: p.link,
-          genre: g.name
+          id: p.id, title: p.title, picture: p.picture_medium, nb_tracks: p.nb_tracks, link: p.link, source: k
         })))
-        .catch((_) => [])
+        .catch(() => [])
     );
-    const genreLists = await Promise.all(genrePromises);
-    const genrePlaylists = genreLists.flat();
+    const keywordLists = await Promise.all(keywordPromises);
+    const keywordPlaylists = keywordLists.flat();
 
-    // 3) Curated playlists: fetch details (if any)
-    const curatedPromises = (CURATED_PLAYLIST_IDS || []).slice(0, 10).map(id =>
+    // 3) Curated playlists (use if you provided IDs)
+    const curatedPromises = (CURATED_PLAYLIST_IDS || []).slice(0, 12).map(id =>
       axios.get(`${DEEZER}/playlist/${id}`)
         .then(r => {
           const p = r.data;
           return { id: p.id, title: p.title, picture: p.picture_medium, nb_tracks: p.nb_tracks, link: p.link };
         })
-        .catch((_) => null)
+        .catch(() => null)
     );
     const curatedResolved = (await Promise.all(curatedPromises)).filter(Boolean);
 
-    // Combine, dedupe, shuffle, limit
-    let combined = [...chartPlaylists, ...genrePlaylists, ...curatedResolved];
+    // Combine: prefer curated first, then keyword results, then chart
+    let combined = [...curatedResolved, ...keywordPlaylists, ...chartPlaylists];
     combined = uniqueById(combined);
     combined = shuffle(combined);
     const result = combined.slice(0, clamped);
 
-    const response = { playlists: result, sourceCounts: { chart: chartPlaylists.length, genre: genrePlaylists.length, curated: curatedResolved.length } };
+    const response = {
+      playlists: result,
+      sourceCounts: { chart: chartPlaylists.length, keyword: keywordPlaylists.length, curated: curatedResolved.length }
+    };
 
-    // Cache it
     setCache(cacheKey, response, Number(ttlSeconds || 90));
-
     return response;
   } catch (error) {
-    console.error("Error fetching home playlists (fetchHomePlaylists):", error.response?.data || error.message);
+    console.error("Error fetching home playlists (Indian) :", error.response?.data || error.message);
     throw error;
   }
 };
+
 
 /* ------------------------
    4) FETCH ARTIST DETAIL + TOP TRACKS
