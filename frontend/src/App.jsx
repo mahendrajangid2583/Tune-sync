@@ -40,6 +40,7 @@ function App() {
                   <Route path="/Profile" element={<Profile />} />
                   <Route path="/verification-email" element={<VerifyEmail />} />
                   <Route path="/playlist" element={<PlaylistPage />} />
+                  <Route path="/playlist/:playlistId" element={<PlaylistPage />} />
                   
                   <Route path="/connect-page" element={<PrivetRoute>
                     <ConnectPage />

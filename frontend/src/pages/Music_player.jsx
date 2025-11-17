@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useAudio } from "./contexts/AudioProvider";
 import FullScreenMusicPlayer from "./FullScreenMusicPlayer"; // Import the full-screen component
+import myImage from "./coverImage.jpg";
 
 const MusicPlayer = () => {
   const {
@@ -119,7 +120,12 @@ const MusicPlayer = () => {
   // Get title, artist, and cover image from the current song or the prop
   const title = currentSong?.title || "Unknown Title";
   const artists = currentSong?.artists || "Unknown Artist";
-  const coverImage = currentSong?.coverImage || "coverImage.jpg";
+  const coverImage =
+    currentSong?.coverImage ||
+    currentSong?.image ||
+    currentSong?.albumCover ||
+    currentSong?.picture ||
+    myImage;
 
   return (
     <>
@@ -135,7 +141,7 @@ const MusicPlayer = () => {
               alt={`${title} by ${artists}`}
               className="w-full h-full object-cover"
               onError={(e) => {
-                e.target.src = "coverImage.jpg"; // Fallback to default image on error
+                e.target.src = myImage; // Fallback to default image on error
               }}
             />
           </div>

@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useAudio } from "./contexts/AudioProvider";
+import myImage from "./coverImage.jpg";
 
 const FullScreenMusicPlayer = ({ isOpen, onClose }) => {
   const {
@@ -87,7 +88,11 @@ const FullScreenMusicPlayer = ({ isOpen, onClose }) => {
 
   const title = currentSong?.title || "Unknown Title";
   const artists = currentSong?.artists || "Unknown Artist";
-  const coverImage = currentSong?.coverImage || "coverImage.jpg";
+  const coverImage =
+    currentSong?.coverImage ||
+    currentSong?.imageUrl ||
+    currentSong?.image ||
+    myImage;
 
   if (!isOpen) return null;
 
@@ -126,7 +131,7 @@ const FullScreenMusicPlayer = ({ isOpen, onClose }) => {
             alt={`${title} by ${artists}`}
             className="w-full h-full object-cover"
             onError={(e) => {
-              e.target.src = "coverImage.jpg";
+              e.target.src = myImage;
             }}
           />
         </div>

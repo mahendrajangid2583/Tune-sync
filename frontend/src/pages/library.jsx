@@ -73,10 +73,11 @@ const MusicLibrary = () => {
   };
 
   const handleOpenPlaylist = (playlist) => {
-    navigate('/playlist', { 
-      state: { 
-        playlist: playlist 
-      } 
+    if (!playlist?.id) return;
+    navigate(`/playlist/${playlist.id}`, {
+      state: {
+        playlist: playlist,
+      },
     });
   };
 

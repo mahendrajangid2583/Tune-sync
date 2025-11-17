@@ -1,18 +1,31 @@
-const BASE_URL = process.env.REACT_APP_BASE_URL
+const withTrailingSlash = (value = "") =>
+  value.endsWith("/") ? value : `${value}/`;
 
+const BASE_URL =
+  withTrailingSlash(
+    process.env.REACT_APP_BASE_URL || "http://localhost:4000/api/v1/"
+  );
 
-export const endpoints ={
-    SENDOTP_API: BASE_URL + "/auth/sendotp",
-    SIGNUP_API: BASE_URL + "/auth/signup",
-    LOGIN_API: BASE_URL + "/auth/login"
-}
+const MUSIC_API_BASE_URL = withTrailingSlash(
+  process.env.REACT_APP_MUSIC_API_BASE_URL ||
+    (BASE_URL.includes("/api/v1/")
+      ? BASE_URL.replace("/api/v1/", "/api/")
+      : BASE_URL)
+);
 
-export const songEndpoints = {
-    AUTOSUGGETION_API: BASE_URL + "songs/autosuggestion",
-    GET_SONG: BASE_URL + "songs/song/:id",
-    GET_PLAYLIST: BASE_URL + "songs/playlists/",
-    GET_ARTIST: BASE_URL + "songs/artists/"
-}
+export const endpoints = {
+  SENDOTP_API: BASE_URL + "auth/sendotp",
+  SIGNUP_API: BASE_URL + "auth/signup",
+  LOGIN_API: BASE_URL + "auth/login",
+};
+
+export const musicEndpoints = {
+  SEARCH: MUSIC_API_BASE_URL + "search",
+  HOME_PLAYLISTS: MUSIC_API_BASE_URL + "home/playlists",
+  HOME_ARTISTS: MUSIC_API_BASE_URL + "home/artists",
+  PLAYLIST_DETAIL: MUSIC_API_BASE_URL + "playlist",
+  ARTIST_DETAIL: MUSIC_API_BASE_URL + "artist",
+};
 
 
 export const friendEndpoints = {

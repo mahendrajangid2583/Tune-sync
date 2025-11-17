@@ -1,39 +1,56 @@
-// line 536 may be a part of doubt , when token expires or I want to open Id of some other guy.
-import React, { useState, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Navbar";
 import SearchPage from "./Search";
-import { fetchProfile } from "../services/operations/auth";
 import MusicPlayer from "./Music_player";
 import myImage from "./coverImage.jpg";
-import { fetchArtist, fetchPlaylist } from "../services/operations/songsAPI";
 import Navbar from "../components/Navbar";
-import { io } from "socket.io-client";
-import {useAudio} from "./contexts/AudioProvider";
+import { useAudio } from "./contexts/AudioProvider";
 import MyFriendButton from "../components/connect_components/MyFriendButton";
 import GroupSidebarButton from "../components/groups_components/GroupSidebarButton";
 import HeroSection from "../components/Home-Page-Components/HeroSection";
-
 import FeaturedPlaylists from "../components/Home-Page-Components/FeaturedPlaylists";
 import Artists from "../components/Home-Page-Components/Artists";
 import GenresSection from "../components/Home-Page-Components/GenresSection";
 import Footer from "../components/Home-Page-Components/Footer";
-import useAudioUnlock from "../utils/useAudioUnlock";
+import { getHomePlaylists, getHomeArtists } from "../services/operations/songsAPI";
 
 
  
 
 // Main MusicHomepage component
-const MusicHomepage = (params) => {
-  // Router hooks
-  const [loading, setloading] = useState(true);
-  const navigate = useNavigate();
-  const {
-    isPlaying
-  } = useAudio();
-  // Extract data from location state or params
+const HOME_PLAYLIST_CACHE_KEY = "tunesync_home_playlists_v1";
+const HOME_PLAYLIST_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-   const [_Artists, setArtists] = useState([
+const readCachedPlaylists = () => {
+  if (typeof window === "undefined") {
+    return { playlists: [], meta: null, timestamp: 0 };
+  }
+  try {
+    const cached = sessionStorage.getItem(HOME_PLAYLIST_CACHE_KEY);
+    if (!cached) return { playlists: [], meta: null, timestamp: 0 };
+    const parsed = JSON.parse(cached);
+    if (!parsed.timestamp) return { playlists: [], meta: null, timestamp: 0 };
+    if (Date.now() - parsed.timestamp > HOME_PLAYLIST_CACHE_TTL) {
+      return { playlists: [], meta: null, timestamp: 0 };
+    }
+    return {
+      playlists: parsed.playlists || [],
+      meta: parsed.meta || null,
+      timestamp: parsed.timestamp,
+    };
+  } catch (error) {
+    console.warn("Failed to parse cached playlists", error);
+    return { playlists: [], meta: null, timestamp: 0 };
+  }
+};
+
+const MusicHomepage = () => {
+  const navigate = useNavigate();
+  const { isPlaying } = useAudio();
+
+  const cachedHome = useMemo(() => readCachedPlaylists(), []);
+
+  const [_Artists] = useState([
     {
       id: 485956,
       title: "Yo Yo Honey Singh",
@@ -78,107 +95,14 @@ const MusicHomepage = (params) => {
     "Country",
   ];
 
-  const [featuredPlaylists, setfeaturedPlaylists] = useState(
-
-    [
-    {
-      id: 1208889681,
-      title: "Lofi Music",
-      description: "Relax your mind",
-      imageUrl: myImage,
-      songsCount:0
-    },
-    {
-      id: 1219015193,
-      title: "Old is gold",
-      description: "Relaxing beats for your day",
-      imageUrl: myImage,
-      songsCount:0
-    },
-    {
-      id: 1139074020,
-      title: "Love songs",
-      description: "__",
-      imageUrl: myImage,
-      songsCount:0
-    },
-    {
-      id: 1219169738,
-      title: "Indie Discoveries",
-      description: "Fresh indie tracks for you",
-      imageUrl: myImage,
-      songsCount:0
-    },
-    {
-      id: 156710699,
-      title: "Classic Rock",
-      description: "Timeless rock anthems",
-      imageUrl: myImage,
-      songsCount:0
-    },
-  ]);
-
-
-
-
-  useEffect(() => {
-    const fetchAllPlaylists = async () => {
-      try {
-        if(featuredPlaylists.songsCount > 0){
-           return;
-        }
-        const updatedPlaylists = await Promise.all(
-          featuredPlaylists.map(async (element) => {
-            const response = await fetchPlaylist(element.id);
-            console.log("response Home", response.image);
-            return {
-              ...element,
-              imageUrl: response.image[Object.keys(response.image).length - 1].url,
-              title: response.name,
-              description: response.description,
-              songsCount:response.songCount,
-              songs: response.songs
-            };
-          })
-        );
-         
-        setfeaturedPlaylists(updatedPlaylists); // Update state with new array
-      } catch (error) {
-        console.error("Error fetching playlists:", error);
-      }
-    };
-
-    const fetchAllArtists = async () => {
-      try {
-        const updatedArtists = await Promise.all(
-          _Artists.map(async (element) => {
-            const response = await fetchArtist(element.id);
-            console.log("first check", response);
-            return {
-              ...element,
-              imageUrl: response.image[Object.keys(response.image).length - 1].url,
-              title: response.name,
-              description: response.description,
-              songsCount:10,
-              songs: response.topSongs
-            };
-          })
-        );
-       
-        setArtists(updatedArtists);
-        setloading(false);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    fetchAllArtists();
-    fetchAllPlaylists();
-
-  }, []);
-
-
-
-
+  const [homePlaylists, setHomePlaylists] = useState(cachedHome.playlists);
+  const [homeMeta, setHomeMeta] = useState(cachedHome.meta);
+  const [homeUpdatedAt, setHomeUpdatedAt] = useState(cachedHome.timestamp);
+  const [homeError, setHomeError] = useState(null);
+  const [isHomeLoading, setIsHomeLoading] = useState(false);
+  const [homeArtists, setHomeArtists] = useState([]);
+  const [artistsError, setArtistsError] = useState(null);
+  const [isArtistsLoading, setIsArtistsLoading] = useState(false);
   // State management
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchPage, setShowSearchPage] = useState(false);
@@ -223,6 +147,76 @@ const MusicHomepage = (params) => {
   //  Use a "User Interaction Unlock" Mechanism
    
 
+  const fetchHomeData = useCallback(async () => {
+    setIsHomeLoading(true);
+    setHomeError(null);
+    try {
+      const response = await getHomePlaylists(12);
+      const normalizedPlaylists = (response?.playlists || []).map((playlist) => ({
+        id: playlist.id,
+        title: playlist.title,
+        description:
+          playlist.genre || playlist.description
+            ? playlist.description || `Curated ${playlist.genre}`
+            : `${playlist.nb_tracks || 0} tracks`,
+        imageUrl: playlist.picture || playlist.image || myImage,
+        songsCount: playlist.nb_tracks || playlist.songCount || 0,
+        source: playlist.genre ? `Genre • ${playlist.genre}` : "Deezer",
+      }));
+
+      setHomePlaylists(normalizedPlaylists);
+      setHomeMeta(response?.sourceCounts || null);
+      const payload = {
+        playlists: normalizedPlaylists,
+        meta: response?.sourceCounts || null,
+        timestamp: Date.now(),
+      };
+      sessionStorage.setItem(HOME_PLAYLIST_CACHE_KEY, JSON.stringify(payload));
+      setHomeUpdatedAt(payload.timestamp);
+    } catch (error) {
+      setHomeError(error?.message || "Unable to load playlists right now.");
+    } finally {
+      setIsHomeLoading(false);
+    }
+  }, []);
+
+  const fetchHomeArtistsData = useCallback(async () => {
+    setIsArtistsLoading(true);
+    setArtistsError(null);
+    try {
+      const response = await getHomeArtists(10);
+      const normalizedArtists = (response?.artists || []).map((artist) => ({
+        id: artist.id,
+        title: artist.name,
+        imageUrl: artist.picture || artist.picture_medium || myImage,
+        trackPreview: artist.trackPreview || null,
+      }));
+
+      setHomeArtists(normalizedArtists);
+    } catch (error) {
+      setArtistsError(error?.message || "Unable to load artists right now.");
+    } finally {
+      setIsArtistsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const isCacheFresh =
+      homePlaylists.length > 0 &&
+      homeUpdatedAt &&
+      Date.now() - homeUpdatedAt < HOME_PLAYLIST_CACHE_TTL;
+
+    if (!isCacheFresh) {
+      fetchHomeData();
+    }
+  }, [fetchHomeData, homePlaylists.length, homeUpdatedAt]);
+
+  useEffect(() => {
+    if (homeArtists.length === 0) {
+      fetchHomeArtistsData();
+    }
+  }, [fetchHomeArtistsData, homeArtists.length]);
+
   return (
     <div className="min-h-screen bg-gray-900 text-white font-sans relative overflow-hidden">
       {/* Header Component */}
@@ -249,10 +243,18 @@ const MusicHomepage = (params) => {
         />
 
         {/* Featured Playlists */}
-        <FeaturedPlaylists playlists={featuredPlaylists} navigate={navigate} />
+        <FeaturedPlaylists
+          playlists={homePlaylists}
+          navigate={navigate}
+          isLoading={isHomeLoading}
+          error={homeError}
+          onRetry={fetchHomeData}
+          lastUpdated={homeUpdatedAt}
+          meta={homeMeta}
+        />
 
-        {/* New Releases */}
-        <Artists releases={_Artists} navigate = {navigate}/>
+        {/* Browse Artists */}
+        <Artists releases={homeArtists.length > 0 ? homeArtists : _Artists} navigate={navigate} isLoading={isArtistsLoading} error={artistsError} />
 
         {/* Genres */}
         <GenresSection genres={genres} />

@@ -10,6 +10,7 @@ import myImage from "../coverImage.jpg";
 import { useSocket } from "./SocketContext";
 import { useGroup } from "./GroupContext";
 import toast from "react-hot-toast";
+import { buildPlayerSong } from "../../utils/trackUtils";
 const AudioContext = createContext();
 
 export const AudioProvider = ({ children }) => {
@@ -116,6 +117,10 @@ export const AudioProvider = ({ children }) => {
 
   // Load and play a song
   function loadSong(song) {
+    if (!song?.audioSrc) {
+      toast.error("Preview not available for this track yet.");
+      return;
+    }
     const audio = audioRef.current;
     setCurrentTime(0);
     // If it's the same song that was already loaded, don't reload
@@ -139,60 +144,31 @@ export const AudioProvider = ({ children }) => {
     audio.play();
   }
 
-  const getArtists = (artists) => {
-    let updatedArtists = "";
-    let flag = 0;
-    let count = 0;
-    artists.forEach((artist) => {
-      if (count >= 2) {
-        flag = 1;
-        return;
-      }
-      if (updatedArtists) updatedArtists += ", ";
-      updatedArtists += artist.name;
-      count++;
-    });
-    if (flag) {
-      updatedArtists += "...";
-    }
-    return updatedArtists;
-  };
-
   function nextSong() {
-    const length = sizenext();
-
-    if (length > 0) {
+    let attempts = 0;
+    while (sizenext() > 0 && attempts < 50) {
       const curr = peeknext();
       dequeuenext();
-      // Only enqueue previous if there's a valid current song
+      attempts += 1;
+
       if (currentSong && currentSong.title) {
         enqueueprev(currentSong);
       }
-      const _currentSong = {
-        title: curr.name,
-        artists: getArtists(curr.artists.primary),
-        coverImage:
-          curr.image[Object.keys(curr.image).length - 1].url ||
-          "https://via.placeholder.com/50",
-        audioSrc:
-          curr.downloadUrl[Object.keys(curr.downloadUrl).length - 1].url || "",
-        duration: curr.duration,
-        id: curr.id, // Store the song ID for highlighting
-      };
 
-      if (!_currentSong || !_currentSong.audioSrc) {
-        console.error("Invalid song object:", curr);
-        return false;
+      const candidate = buildPlayerSong(curr, myImage);
+      if (!candidate?.audioSrc) {
+        console.warn("Skipping track without preview", curr?.title || curr?.name);
+        continue;
       }
 
-      loadSong(_currentSong);
-    } else {
-      console.warn("No next song available");
-      // If no next song, stop playing or loop back to the beginning
-      const audio = audioRef.current;
-      audio.pause();
-      setIsPlaying(false);
+      loadSong(candidate);
+      return;
     }
+
+    console.warn("No next song available");
+    const audio = audioRef.current;
+    audio.pause();
+    setIsPlaying(false);
   }
 
   const [songTimeChange, setSongTimeChange] = useState();

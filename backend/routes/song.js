@@ -6,16 +6,19 @@ const {
   auth
 } = require("../middlewares/auth");
 const {
-    autoSuggetion,
     getSong,
     getPlaylist,
-    getArtistsSongs
+    fetchHomePlaylists,
+    getArtist,
+    fetchHomeArtists
   } = require("../controllers/SongControllers");
 
   // Route for auto suggestion 
-router.get("/autosuggestion",autoSuggetion);
-router.get("/song/:id",getSong);
-router.get("/playlists/:id" , getPlaylist);
-router.get("/artists/:id" , getArtistsSongs);
+
+router.get("/search", getSong);
+router.get("/playlist/:id" , getPlaylist);
+router.get("/home/playlists" , fetchHomePlaylists);
+router.get("/home/artists" , fetchHomeArtists);
+router.get("/artist/:id" , getArtist);
 
 module.exports = router;
