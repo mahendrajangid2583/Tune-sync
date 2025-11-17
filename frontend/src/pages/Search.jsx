@@ -317,6 +317,37 @@ const SearchPage = (params) => {
 
             
 
+            {results.artists.length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-lg font-bold mb-4">Artists</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                  {results.artists.map((artist) => (
+                    <div
+                      key={artist.id}
+                      className="bg-gray-800 rounded-lg p-4 text-center hover:bg-gray-700 transition-colors cursor-pointer"
+                      onClick={() => handleArtistNavigate(artist)}
+                    >
+                      <div className="w-24 h-24 rounded-full overflow-hidden mx-auto mb-3">
+                        <img
+                          src={artist.picture || artist.picture_medium || myImage}
+                          alt={artist.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <p className="font-medium truncate">{artist.name}</p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        {artist.nb_fan
+                          ? `${new Intl.NumberFormat().format(
+                              artist.nb_fan
+                            )} fans`
+                          : "Artist"}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
 
             {results.playlists.length > 0 && (
               <div className="mb-8">
@@ -351,36 +382,6 @@ const SearchPage = (params) => {
                             : "Playlist"}
                         </p>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            {results.artists.length > 0 && (
-              <div className="mb-8">
-                <h3 className="text-lg font-bold mb-4">Artists</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                  {results.artists.map((artist) => (
-                    <div
-                      key={artist.id}
-                      className="bg-gray-800 rounded-lg p-4 text-center hover:bg-gray-700 transition-colors cursor-pointer"
-                      onClick={() => handleArtistNavigate(artist)}
-                    >
-                      <div className="w-24 h-24 rounded-full overflow-hidden mx-auto mb-3">
-                        <img
-                          src={artist.picture || artist.picture_medium || myImage}
-                          alt={artist.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <p className="font-medium truncate">{artist.name}</p>
-                      <p className="text-xs text-gray-400 mt-1">
-                        {artist.nb_fan
-                          ? `${new Intl.NumberFormat().format(
-                              artist.nb_fan
-                            )} fans`
-                          : "Artist"}
-                      </p>
                     </div>
                   ))}
                 </div>
